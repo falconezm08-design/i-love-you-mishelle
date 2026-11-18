@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>I LOVE YOU 💗</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 20% 20%, #35102f 0, transparent 35%),
+        radial-gradient(circle at 80% 80%, #1e1646 0, transparent 38%),
+        #090711;
+      color: #fff;
+      font-family: "Trebuchet MS", Arial, sans-serif;
+    }
+    .scene {
+      width: min(1100px, 96vw);
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(12px, 3vw, 48px);
+      padding: 24px;
+    }
+    canvas {
+      width: min(65vw, 680px);
+      height: auto;
+      filter: drop-shadow(0 0 18px rgba(255, 35, 147, .28));
+      animation: heartbeat 2.1s ease-in-out infinite;
+    }
+    .dedication {
+      max-width: 300px;
+      color: #ff83c7;
+      font-size: clamp(24px, 4vw, 48px);
+      line-height: 1.18;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-align: left;
+      text-shadow: 0 0 8px #ff2b9b, 0 0 24px rgba(255, 43, 155, .8);
+      animation: glow 2.4s ease-in-out infinite alternate;
+    }
+    .dedication span {
+      display: block;
+      color: #fff0fa;
+      font-size: .48em;
+      letter-spacing: .22em;
+      margin-bottom: 12px;
+    }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      14% { transform: scale(1.025); }
+      28% { transform: scale(1); }
+      42% { transform: scale(1.015); }
+      56% { transform: scale(1); }
+    }
+    @keyframes glow {
+      from { opacity: .82; text-shadow: 0 0 8px #ff2b9b; }
+      to { opacity: 1; text-shadow: 0 0 14px #ff2b9b, 0 0 34px #ff2b9b; }
+    }
+    @media (max-width: 650px) {
+      body { overflow: auto; }
+      .scene {
+        min-height: 100vh;
+        flex-direction: column;
+        gap: 0;
+        padding: 18px 12px 36px;
+      }
+      canvas { width: min(94vw, 560px); }
+      .dedication { text-align: center; margin-top: -8px; }
+      .dedication span { margin-bottom: 6px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="scene">
+    <canvas id="heart" aria-label="Corazón formado por muchas palabras I LOVE YOU"></canvas>
+    <div class="dedication">
+      <span>WITH LOVE</span>
+      MY DEAR<br> MISHELLE
+    </div>
+  </main>
+
+  <script>
+    const canvas = document.getElementById("heart");
+    const ctx = canvas.getContext("2d");
+
+    function insideHeart(x, y) {
+      const a = x*x + y*y - 1;
+      return a*a*a - x*x*y*y*y <= 0;
+    }
+
+    function drawHeart() {
+      const size = Math.min(680, Math.floor(window.innerWidth * (window.innerWidth <= 650 ? 0.9 : 0.62)));
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = size * dpr;
+      canvas.height = size * dpr;
+      canvas.style.width = size + "px";
+      canvas.style.height = size + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, size, size);
+
+      const centerX = size / 2;
+      const centerY = size * 0.49;
+      const scale = size * 0.39;
+      const word = "I LOVE YOU";
+      const fontSize = Math.max(9, size * 0.019);
+      ctx.font = `bold ${fontSize}px Trebuchet MS, Arial, sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      const rowGap = fontSize * 1.55;
+      const colGap = fontSize * 5.2;
+      let row = 0;
+      for (let py = -1.18; py <= 1.18; py += rowGap / scale) {
+        const y = py;
+        let col = 0;
+        for (let px = -1.25; px <= 1.25; px += colGap / scale) {
+          if (insideHeart(px, -y)) {
+            const hue = 320 + ((row * 17 + col * 9) % 36);
+            const light = 66 + ((row + col) % 3) * 7;
+            ctx.fillStyle = `hsl(${hue}, 100%, ${light}%)`;
+            ctx.shadowColor = "rgba(255, 45, 160, .55)";
+            ctx.shadowBlur = 5;
+            ctx.fillText(word, centerX + px * scale, centerY + y * scale);
+          }
+          col++;
+        }
+        row++;
+      }
+      ctx.shadowBlur = 0;
+    }
+
+    drawHeart();
+    window.addEventListener("resize", drawHeart);
+  </script>
+</body>
+</html>
